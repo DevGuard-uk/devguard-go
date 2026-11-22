@@ -26,7 +26,8 @@ const (
 // Config configures the DevGuard middleware.
 type Config struct {
 	ProjectID      string
-	APIKey         string
+	SDKKey         string        // Preferred project SDK key (dg_sdk_*); wins over APIKey
+	APIKey         string        // Legacy API / Master Secret fallback
 	APIURL         string        // Default: "https://api.devguard.uk"
 	FailSafe       FailSafeMode  // Default: FailSafeOpen ("open")
 	Timeout        time.Duration // Default: 2500 * time.Millisecond
@@ -51,6 +52,9 @@ type Guard struct {
 
 // New creates a new Guard instance with normalized defaults.
 func New(cfg Config) *Guard {
+	if strings.TrimSpace(cfg.SDKKey) != "" {
+		cfg.APIKey = strings.TrimSpace(cfg.SDKKey)
+	}
 	if cfg.APIURL == "" {
 		cfg.APIURL = "https://api.devguard.uk"
 	}

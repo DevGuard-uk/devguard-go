@@ -35,6 +35,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/DevGuard-uk/devguard-go"
@@ -43,7 +44,8 @@ import (
 func main() {
 	guard := devguard.New(devguard.Config{
 		ProjectID:      "proj_your_project_id",
-		APIKey:         "your_api_key",
+		// Prefer project SDK key (Portal → Project SDK key). Falls back to APIKey.
+		SDKKey:         os.Getenv("DEVGUARD_SDK_KEY"),
 		AllowedDomains: []string{"example.com", "*.example.com", "localhost"},
 		FailSafe:       devguard.FailSafeOpen,
 		Timeout:        2500 * time.Millisecond,
@@ -155,7 +157,8 @@ func main() {
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `ProjectID` | `string` | `""` | DevGuard Project ID. |
-| `APIKey` | `string` | `""` | DevGuard API Key for authenticated requests. |
+| `SDKKey` | `string` | `""` | Preferred project SDK key (`DEVGUARD_SDK_KEY` / Portal → Project SDK key). |
+| `APIKey` | `string` | `""` | Legacy API / Master Secret fallback when `SDKKey` is unset. |
 | `APIURL` | `string` | `"https://api.devguard.uk"` | Custom DevGuard API endpoint. |
 | `FailSafe` | `FailSafeMode` | `FailSafeOpen` | `FailSafeOpen` ("open") or `FailSafeClosed` ("closed"). |
 | `Timeout` | `time.Duration` | `2500ms` | Network timeout for API status checks. |
